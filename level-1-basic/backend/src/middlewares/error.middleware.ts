@@ -1,7 +1,7 @@
 
 import { ErrorRequestHandler } from 'express';
-import { logger } from '../utils/logger';
-import { envConfig } from '../config/env';
+import { logger } from '@utils/logger';
+import { envConfig } from '@config/env';
 
 type AppError = Error & {
   statusCode?: number;
@@ -9,7 +9,7 @@ type AppError = Error & {
   details?: unknown;
 };
 
-const errorHandler: ErrorRequestHandler = (error: AppError, _req, res, _next) => {
+export const errorHandler: ErrorRequestHandler = (error: AppError, _req, res, _next) => {
   const isOperational = error.isOperational === true;
 
   const statusCode =
