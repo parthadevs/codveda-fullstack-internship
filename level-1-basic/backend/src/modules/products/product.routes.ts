@@ -6,6 +6,7 @@ import {
   updateProductSchema,
   productIdParamSchema,
   productQuerySchema,
+  statusToggleSchema,
 } from "./product.schema";
 import { productController } from "./product.controller";
 
@@ -40,6 +41,13 @@ router.delete(
   "/:id",
   validate(productIdParamSchema, "params"),
   asyncHandler(productController.deleteProduct),
+);
+
+router.patch(
+  "/:id/status",
+  validate(productIdParamSchema, "params"),
+  validate(statusToggleSchema, "body"),
+  asyncHandler(productController.toggleStatus),
 );
 
 export default router;

@@ -57,6 +57,15 @@ class ProductService {
     await productRepository.delete(id);
     return { message: "Product deleted" };
   }
+
+  async toggleStatus(id: string, isActive: boolean): Promise<ProductResponse> {
+    const existing = await productRepository.findById(id);
+    if (!existing) {
+      throw AppError.notFound(`Product ${id} not found`);
+    }
+
+    return productRepository.toggleStatus(id, isActive);
+  }
 }
 
 export const productService = new ProductService();

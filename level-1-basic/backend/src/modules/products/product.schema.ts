@@ -87,6 +87,10 @@ export const productQuerySchema = z.object({
     .transform((val) => (val ? Math.min(100, Math.max(1, parseInt(val, 10))) : 10)),
   search: z.string().optional(),
   category: z.string().optional(),
+  isActive: z
+    .string()
+    .optional()
+    .transform((val) => (val === 'true' ? true : val === 'false' ? false : undefined)),
   minPrice: z
     .string()
     .optional()
@@ -107,3 +111,9 @@ export type CreateProductInput = z.infer<typeof createProductSchema>;
 export type UpdateProductInput = z.infer<typeof updateProductSchema>;
 export type ProductIdParam = z.infer<typeof productIdParamSchema>;
 export type ProductQueryParams = z.infer<typeof productQuerySchema>;
+
+export const statusToggleSchema = z.object({
+  isActive: z.boolean(),
+});
+
+export type StatusToggleInput = z.infer<typeof statusToggleSchema>;

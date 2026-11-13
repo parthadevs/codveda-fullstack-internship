@@ -56,6 +56,18 @@ class ProductController {
       message: "Product deleted",
     });
   });
+
+  toggleStatus = asyncHandler(async (req: Request, res: Response) => {
+    const { id } = req.params as { id: string };
+    const { isActive } = req.body;
+    const product = await productService.toggleStatus(id, isActive);
+
+    res.status(200).json({
+      success: true,
+      message: `Product ${isActive ? "activated" : "deactivated"}`,
+      data: product,
+    });
+  });
 }
 
 export const productController = new ProductController();

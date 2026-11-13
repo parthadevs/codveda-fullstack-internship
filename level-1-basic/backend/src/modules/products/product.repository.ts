@@ -62,6 +62,7 @@ class ProductRepository {
       limit = 10,
       search,
       category,
+      isActive,
       minPrice,
       maxPrice,
       inStock,
@@ -97,6 +98,10 @@ class ProductRepository {
       where.stock = inStock ? { gt: 0 } : 0;
     }
 
+    if (isActive !== undefined) {
+      where.isActive = isActive;
+    }
+
     try {
       const [data, total] = await this.db.$transaction([
         this.db.product.findMany({
@@ -126,6 +131,14 @@ class ProductRepository {
     });
 
     return product !== null;
+  }
+
+  async toggleStatus(id: string, isActive: boolean): Promise<ProductEntity> {
+    return this.db.product.update({
+      where: { id },
+      data: { isActive },
+      select: PRODUCT_SELECT,
+    });
   }
 }
 
