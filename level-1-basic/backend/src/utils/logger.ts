@@ -1,5 +1,5 @@
 import winston, { format, transports } from 'winston';
-import { envConfig } from '@config/env';
+import { envConfig } from '../config/env';
 
 const LEVELS = { error: 0, warn: 1, info: 2, http: 3, debug: 4 } as const;
 const LEVEL_NAMES = new Set<string>(Object.keys(LEVELS));

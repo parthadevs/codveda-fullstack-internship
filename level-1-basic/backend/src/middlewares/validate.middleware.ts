@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import type { ZodError, ZodSchema } from 'zod';
-import { logger } from '@utils/logger';
+import { logger } from '../utils/logger';
 
 type ValidationSource = 'body' | 'query' | 'params';
 type FieldError = { field: string; message: string };

@@ -1,6 +1,6 @@
 import { Router } from "express";
-import asyncHandler from "@utils/async-handler";
-import validate from "@middlewares/validate.middleware";
+import asyncHandler from "../../utils/async-handler";
+import validate from "../../middlewares/validate.middleware";
 import {
   createProductSchema,
   updateProductSchema,

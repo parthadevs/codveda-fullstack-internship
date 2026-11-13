@@ -1,4 +1,4 @@
-import AppError from "@utils/app-error";
+import AppError from "../../utils/app-error";
 import { productRepository } from "./product.repository";
 import {
   CreateProductInput,

@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { envConfig } from '@config/env';
+import { envConfig } from '../config/env';
 
 class NotFoundMiddleware {
   public static handle(req: Request, _res: Response, next: NextFunction): void {

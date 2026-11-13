@@ -1,6 +1,6 @@
 import App from "./app";
-import { logger } from "@utils/logger";
-import { databaseManager } from "@config/database";
+import { logger } from './utils/logger';
+import { databaseManager } from './config/database';
 
 class Server {
   private app: App | null = null;

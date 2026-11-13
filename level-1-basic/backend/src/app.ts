@@ -2,12 +2,12 @@
 import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
-import { envConfig } from '@config/env';
-import { logger } from '@utils/logger';
-import { databaseManager } from '@config/database';
-import errorMiddleware from '@middlewares/error.middleware';
+import { envConfig } from './config/env';
+import { logger } from './utils/logger';
+import { databaseManager } from './config/database';
+import errorMiddleware from './middlewares/error.middleware';
 import { appRoutes } from './routes';
-import notFoundMiddleware from '@middlewares/not-found.middleware';
+import notFoundMiddleware from './middlewares/not-found.middleware';
 
 class App {
   public readonly app: Application;

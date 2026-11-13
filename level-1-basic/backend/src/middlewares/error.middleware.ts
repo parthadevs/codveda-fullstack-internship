@@ -1,7 +1,7 @@
 
 import { ErrorRequestHandler } from 'express';
-import { logger } from '@utils/logger';
-import { envConfig } from '@config/env';
+import { logger } from '../utils/logger';
+import { envConfig } from '../config/env';
 
 type AppError = Error & {
   statusCode?: number;
