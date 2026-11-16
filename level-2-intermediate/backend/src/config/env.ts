@@ -47,6 +47,10 @@ class EnvConfig {
     }
     return origin.split(",").map((item) => item.trim());
   }
+  // SALT_ROUNDS
+  public get soltRounds(){
+    return this.get("SALT_ROUNDS");
+  }
 
   public get port(): number {
     return this.getNumber("PORT", 3000);
