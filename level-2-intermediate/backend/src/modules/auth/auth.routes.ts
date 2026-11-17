@@ -2,6 +2,7 @@ import { Router } from "express";
 import asyncHandler from "../../utils/async-handler";
 import validate from "../../middlewares/validate.middleware";
 import { authenticate } from "../../middlewares/authenticate.middleware";
+import { authRateLimit } from "../../middlewares/rate-limit.middleware";
 import {
   signupSchema,
   loginSchema,
@@ -12,12 +13,14 @@ const router = Router();
 
 router.post(
   "/signup",
+  authRateLimit,
   validate(signupSchema, "body"),
   asyncHandler(authController.signup),
 );
 
 router.post(
   "/login",
+  authRateLimit,
   validate(loginSchema, "body"),
   asyncHandler(authController.login),
 );
