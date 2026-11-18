@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light dark" />
+  <title>Product Catalog</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="app-header">
+    <div class="container app-header-inner">
+      <div class="brand">
+        <svg class="brand-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round" aria-hidden="true">
+          <path d="M3 8l9-5 9 5v8l-9 5-9-5zM3 8l9 5 9-5M12 13v8" />
+        </svg>
+        <span class="brand_name">Product Catalog</span>
+      </div>
+      <div class="app-header-right">
+        <div class="user-menu" id="user-menu" hidden>
+          <span class="user-name" id="user-name"></span>
+          <span class="user-role" id="user-role"></span>
+          <button type="button" id="logout-btn" class="btn btn-ghost">Logout</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main id="main" class="container main">
+    <div class="page-head">
+      <div>
+        <h1>Products</h1>
+        <p id="result-count" class="muted" aria-live="polite"></p>
+      </div>
+      <button type="button" id="add-product-btn" class="btn btn-primary" data-admin-only>Add product</button>
+    </div>
+
+    <div class="toolbar">
+      <div class="toolbar-search">
+        <label for="search-input" class="visually-hidden">Search products</label>
+        <input type="search" id="search-input" class="control" placeholder="Search by name or SKU" autocomplete="off" />
+      </div>
+
+      <div>
+        <label for="category-filter" class="visually-hidden">Filter by category</label>
+        <select id="category-filter" class="control">
+          <option value="">All categories</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="status-filter" class="visually-hidden">Filter by status</label>
+        <select id="status-filter" class="control">
+          <option value="">All statuses</option>
+          <option value="true">Active</option>
+          <option value="false">Inactive</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="sort-select" class="visually-hidden">Sort products</label>
+        <select id="sort-select" class="control">
+          <option value="createdAt:desc">Newest first</option>
+          <option value="createdAt:asc">Oldest first</option>
+          <option value="name:asc">Name A-Z</option>
+          <option value="price:asc">Price low to high</option>
+          <option value="price:desc">Price high to low</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="loading-state" class="state state--loading" role="status">
+      <span class="spinner" aria-hidden="true"></span>
+      <p>Loading products</p>
+    </div>
+
+    <div id="error-state" class="state state--error" role="alert" hidden>
+      <p id="error-message">Could not load products. Check that the API is running, then try again.</p>
+      <button type="button" id="retry-btn" class="btn">Try again</button>
+    </div>
+
+    <div id="empty-state" class="state" hidden>
+      <h2 id="empty-title">No products yet</h2>
+      <p id="empty-text" class="muted">Add a product to get started.</p>
+      <button type="button" id="empty-add-btn" class="btn btn-primary" data-admin-only>Add product</button>
+    </div>
+
+    <div id="table-wrap" class="table-wrap" hidden>
+      <table class="data-table">
+        <caption class="visually-hidden">Product list</caption>
+        <thead>
+          <tr>
+            <th scope="col">Product</th>
+            <th scope="col">SKU</th>
+            <th scope="col">Category</th>
+            <th scope="col" class="num">Price</th>
+            <th scope="col">Stock</th>
+            <th scope="col">Status</th>
+            <th scope="col"><span class="visually-hidden">Actions</span></th>
+          </tr>
+        </thead>
+        <tbody id="product-rows"></tbody>
+      </table>
+    </div>
+
+    <nav id="pagination" class="pagination" aria-label="Pagination" hidden>
+      <button type="button" id="prev-page" class="btn">Previous</button>
+      <span id="page-info" class="muted">Page 1 of 1</span>
+      <button type="button" id="next-page" class="btn">Next</button>
+    </nav>
+  </main>
+
+  <footer class="app-footer">
+    <div class="container">
+      <p>Built with Node.js, Express and PostgreSQL.</p>
+    </div>
+  </footer>
+
+  <dialog id="details-dialog" aria-labelledby="details-title">
+    <div class="dialog-header">
+      <h2 id="details-title">Product details</h2>
+      <div id="details-badges" class="dialog-badges"></div>
+      <button type="button" class="icon-btn" data-close-details aria-label="Close dialog">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M4 4l10 10M14 4L4 14" /></svg>
+      </button>
+    </div>
+
+    <div class="dialog-body" id="details-body"></div>
+
+    <div class="dialog-footer">
+      <button type="button" class="btn" data-close-details>Close</button>
+      <button type="button" id="details-edit-btn" class="btn btn-primary" data-admin-only>Edit product</button>
+    </div>
+  </dialog>
+
+  <dialog id="product-dialog" aria-labelledby="dialog-title">
+    <form id="product-form" novalidate>
+      <div class="dialog-header">
+        <h2 id="dialog-title">Add product</h2>
+        <button type="button" class="icon-btn" data-close-dialog aria-label="Close dialog">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M4 4l10 10M14 4L4 14" /></svg>
+        </button>
+      </div>
+
+      <div class="dialog-body">
+        <p id="form-error" class="form-error" role="alert" hidden></p>
+
+        <div class="field">
+          <label for="product-name">Name <span class="required" aria-hidden="true">*</span></label>
+          <input id="product-name" name="name" type="text" class="control" required minlength="2" maxlength="150" autocomplete="off" aria-describedby="name-error" />
+          <p id="name-error" class="field-error" data-error-for="name" hidden></p>
+        </div>
+
+        <div class="field">
+          <label for="product-sku">SKU <span class="required" aria-hidden="true">*</span></label>
+          <input id="product-sku" name="sku" type="text" class="control" required minlength="3" maxlength="50" autocomplete="off" aria-describedby="sku-hint sku-error" />
+          <p id="sku-hint" class="field-hint">Letters, numbers and hyphens.</p>
+          <p id="sku-error" class="field-error" data-error-for="sku" hidden></p>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="product-price">Price <span class="required" aria-hidden="true">*</span></label>
+            <input id="product-price" name="price" type="number" class="control" required min="0" step="0.01" inputmode="decimal" aria-describedby="price-error" />
+            <p id="price-error" class="field-error" data-error-for="price" hidden></p>
+          </div>
+          <div class="field">
+            <label for="product-stock">Stock <span class="required" aria-hidden="true">*</span></label>
+            <input id="product-stock" name="stock" type="number" class="control" required min="0" step="1" inputmode="numeric" aria-describedby="stock-error" />
+            <p id="stock-error" class="field-error" data-error-for="stock" hidden></p>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="product-category">Category</label>
+          <div class="field-inline">
+            <select id="product-category" name="categoryId" class="control" aria-describedby="category-error">
+              <option value="">No category</option>
+            </select>
+            <button type="button" class="btn" id="create-category-btn">New</button>
+          </div>
+          <p id="category-error" class="field-error" data-error-for="categoryId" hidden></p>
+        </div>
+
+        <div class="field">
+          <label for="product-description">Description</label>
+          <textarea id="product-description" name="description" class="control" rows="3" maxlength="2000" aria-describedby="description-error"></textarea>
+          <p id="description-error" class="field-error" data-error-for="description" hidden></p>
+        </div>
+      </div>
+
+      <div class="dialog-footer">
+        <button type="button" class="btn" data-close-dialog>Cancel</button>
+        <button type="submit" id="save-btn" class="btn btn-primary">Save product</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="confirm-dialog" class="dialog--narrow" aria-labelledby="confirm-title" aria-describedby="confirm-message">
+    <div class="dialog-header">
+      <h2 id="confirm-title">Delete product?</h2>
+    </div>
+    <div class="dialog-body">
+      <p id="confirm-message">This product will be removed permanently.</p>
+    </div>
+    <div class="dialog-footer">
+      <button type="button" id="confirm-cancel-btn" class="btn">Cancel</button>
+      <button type="button" id="confirm-delete-btn" class="btn btn-danger">Delete product</button>
+    </div>
+  </dialog>
+
+  <dialog id="category-dialog" class="dialog--narrow" aria-labelledby="category-dialog-title">
+    <div class="dialog-header">
+      <h2 id="category-dialog-title">Create Category</h2>
+    </div>
+    <div class="dialog-body">
+      <p id="category-dialog-error" class="form-error" role="alert" hidden></p>
+      <div class="field">
+        <label for="category-name">Category Name <span class="required" aria-hidden="true">*</span></label>
+        <input id="category-name" name="name" type="text" class="control" required minlength="2" maxlength="100" autocomplete="off" aria-describedby="category-name-error" />
+        <p id="category-name-error" class="field-error" data-error-for="category-name" hidden></p>
+      </div>
+    </div>
+    <div class="dialog-footer">
+      <button type="button" id="category-dialog-cancel-btn" class="btn">Cancel</button>
+      <button type="button" id="category-dialog-submit-btn" class="btn btn-primary">Create Category</button>
+    </div>
+  </dialog>
+
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+  <script type="module" src="./js/app.js?v=3"></script>
+</body>
+</html>
